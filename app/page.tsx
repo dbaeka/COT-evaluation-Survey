@@ -13,6 +13,32 @@ export default function LandingPage() {
     const handleStart = async () => {
         setLoading(true)
 
+        const existingUUID = localStorage.getItem("evaluator_uuid")
+
+        if (existingUUID) {
+            await supabase
+                .from("evaluators")
+                .update({spot_taken: true})
+                .eq("uuid", existingUUID)
+
+            const {data: existingEvaluator, error} = await supabase
+                .from("evaluators")
+                .select("dev_experience")
+                .eq("uuid", existingUUID)
+                .single()
+
+            if (!error && existingEvaluator) {
+                if (!existingEvaluator.dev_experience) {
+                    router.push("/profile")
+                } else {
+                    router.push("/survey")
+                }
+                return
+            }
+
+            localStorage.removeItem("evaluator_uuid")
+        }
+
         const {data, error} = await supabase
             .from("evaluators")
             .select("*")
