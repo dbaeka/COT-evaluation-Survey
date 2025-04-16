@@ -125,6 +125,11 @@ export default function SurveyPage() {
         if (currentIndex < reviewItems.length - 1) {
             setCurrentIndex(currentIndex + 1)
         } else {
+            await supabase
+                .from("evaluators")
+                .update({date_completed: new Date().toISOString()})
+                .eq("uuid", evaluatorUUID)
+
             router.push("/thank-you")
         }
     }
@@ -179,7 +184,7 @@ export default function SurveyPage() {
                             <SurveyQuestions
                                 questions={surveyResponseQuestions}
                                 responses={responses}
-                                pageId={currentIndex + 1}
+                                currentHash={current.hash}
                                 onChange={handleResponseChange}
                                 errors={errors}
                             />

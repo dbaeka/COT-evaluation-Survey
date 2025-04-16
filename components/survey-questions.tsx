@@ -25,12 +25,12 @@ interface Question {
 interface SurveyQuestionsProps {
     questions: Question[]
     responses: Record<string, any>
-    pageId: number
+    currentHash: string
     onChange: (questionId: string, value: any) => void
     errors: Record<string, string>
 }
 
-export function SurveyQuestions({questions, responses, pageId, onChange, errors}: SurveyQuestionsProps) {
+export function SurveyQuestions({questions, responses, currentHash, onChange, errors}: SurveyQuestionsProps) {
     // Helper function to get detailed descriptions for each option
     const getOptionDescription = (questionId: string, option: string) => {
         if (questionId === "actionable") {
@@ -73,7 +73,7 @@ export function SurveyQuestions({questions, responses, pageId, onChange, errors}
             <CardContent className="p-6">
                 <div className="space-y-8">
                     {questions.map((question) => {
-                        const responseKey = `page_${pageId}_${question.id}`
+                        const responseKey = `${currentHash}_${question.id}`
                         const currentValue = responses[responseKey] || ""
                         const hasError = errors[question.id]
 
