@@ -62,7 +62,6 @@ export default function SurveyPage() {
             if (reviewError) return
 
             const unanswered = reviews.filter(r => !answeredHashes.has(r.hash))
-
             const ordered = [...unanswered, ...reviews.filter(r => answeredHashes.has(r.hash))]
 
             setReviewItems(ordered)
@@ -118,7 +117,7 @@ export default function SurveyPage() {
 
         const current = reviewItems[currentIndex]
         const questions = ["actionable", "clarity", "relevance"]
-        const questionMap: Record<string, number> = {"actionable": 1, "clarity": 2, "relevance": 3}
+        const questionMap: Record<string, number> = {actionable: 1, clarity: 2, relevance: 3}
 
         for (const q of questions) {
             const {error: upsertError} = await supabase
@@ -136,6 +135,40 @@ export default function SurveyPage() {
         if (currentIndex < reviewItems.length - 1) {
             setCurrentIndex(currentIndex + 1)
         } else {
+            // Check for remaining unanswered hashes before thank-you
+            const {data: evaluator} = await supabase
+                .from("evaluators")
+                .select("id")
+                .eq("uuid", evaluatorUUID)
+                .single()
+
+            const {data: assignments} = await supabase
+                .from("assignments")
+                .select("review_id")
+                .eq("evaluator_id", evaluator?.id)
+
+            const reviewIds: readonly any[] = assignments?.map(a => a.review_id) || []
+
+            const {data: responsesData} = await supabase
+                .from("responses")
+                .select("hash")
+                .eq("evaluator_id", evaluatorUUID)
+
+            const answeredHashes = new Set((responsesData || []).map(r => r.hash))
+
+            const {data: allReviews} = await supabase
+                .from("review_items")
+                .select("id, hash, chain_of_thought, ground_truth, prediction, summary, patch")
+                .in("id", reviewIds)
+
+            const remaining = allReviews?.filter(r => !answeredHashes.has(r.hash)) || []
+
+            if (remaining.length > 0) {
+                const nextIndex = reviewItems.findIndex(r => r.hash === remaining[0].hash)
+                setCurrentIndex(nextIndex !== -1 ? nextIndex : 0)
+                return
+            }
+
             await supabase
                 .from("evaluators")
                 .update({date_completed: new Date().toISOString()})
