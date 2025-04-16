@@ -9,6 +9,7 @@ import {AlertCircle} from "lucide-react"
 import {developerProfileQuestions} from "@/lib/survey-data"
 import {saveResponses} from "@/lib/survey-store"
 import {useRouter} from "next/navigation"
+import {supabase} from "@/lib/supabase-client"
 
 export function DeveloperProfile() {
     const router = useRouter()
@@ -70,25 +71,43 @@ export function DeveloperProfile() {
         return !hasErrors
     }
 
-    const handleSubmit = () => {
-        // Validate responses before proceeding
+    const handleSubmit = async () => {
         if (!validateResponses()) {
-            // Scroll to the top to show the validation alert
             window.scrollTo({top: 0, behavior: "smooth"})
             return
         }
 
-        // Combine regular responses with language proficiency
-        const allResponses = {
-            ...responses,
+        const evaluatorUUID = localStorage.getItem("evaluator_uuid")
+        if (!evaluatorUUID) {
+            alert("Evaluator UUID not found. Please start from the homepage.")
+            return
+        }
+
+        const payload = {
+            dev_experience: responses["dev_experience"],
+            review_giving_experience: responses["review_giving_experience"],
+            review_receiving_experience: responses["review_receiving_experience"],
+            review_expertise: responses["review_expertise"],
+            date_started: new Date().toISOString(),
+            date_last_accessed: new Date().toISOString(),
             language_proficiency: languageProficiency,
         }
 
-        // Save responses
+        const {error} = await supabase
+            .from("evaluators")
+            .update(payload)
+            .eq("uuid", evaluatorUUID)
+
+        if (error) {
+            console.error("Failed to update evaluator profile:", error.message)
+            alert("Something went wrong. Please try again.")
+            return
+        }
+
+        const allResponses = {...responses, language_proficiency: languageProficiency}
         saveResponses(allResponses)
 
-        // Navigate to the first survey page
-        router.push("/survey/1")
+        router.push("/survey")
     }
 
     // Group languages into categories for more compact display
