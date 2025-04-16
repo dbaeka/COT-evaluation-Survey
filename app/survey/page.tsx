@@ -47,6 +47,13 @@ export default function SurveyPage() {
 
             const reviewIds = assignments.map(a => a.review_id)
 
+            const {data: responsesData} = await supabase
+                .from("responses")
+                .select("hash")
+                .eq("evaluator_id", evaluatorUUID)
+
+            const answeredHashes = new Set((responsesData || []).map(r => r.hash))
+
             const {data: reviews, error: reviewError} = await supabase
                 .from("review_items")
                 .select("id, hash, chain_of_thought, ground_truth, prediction, summary, patch")
@@ -54,7 +61,11 @@ export default function SurveyPage() {
 
             if (reviewError) return
 
-            setReviewItems(reviews)
+            const unanswered = reviews.filter(r => !answeredHashes.has(r.hash))
+
+            const ordered = [...unanswered, ...reviews.filter(r => answeredHashes.has(r.hash))]
+
+            setReviewItems(ordered)
             setIsLoading(false)
         }
 
@@ -134,6 +145,12 @@ export default function SurveyPage() {
         }
     }
 
+    const handleJumpTo = (index: number) => {
+        setErrors({})
+        setShowValidationAlert(false)
+        setCurrentIndex(index)
+    }
+
     if (isLoading) {
         return (
             <div className="simple-bg flex min-h-screen items-center justify-center">
@@ -166,6 +183,18 @@ export default function SurveyPage() {
             </span>
                     </div>
                     <Progress value={progressPercentage} className="h-2"/>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                        {reviewItems.map((_, idx) => (
+                            <Button
+                                key={idx}
+                                variant={idx === currentIndex ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleJumpTo(idx)}
+                            >
+                                {idx + 1}
+                            </Button>
+                        ))}
+                    </div>
                 </div>
 
                 <Card className="mb-6">
