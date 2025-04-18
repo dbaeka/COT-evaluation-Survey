@@ -36,7 +36,7 @@ export const surveyResponseQuestions = [
         id: "actionable",
         type: "likert",
         text: "Actionable",
-        description: "Does the explanation in the reasoning trace suggest actionable changes?",
+        description: "Does the explanation in the reasoning trace suggest actionable changes (asks user to make a change)?",
         options: ["Not Actionable", "Partially Actionable", "Clearly Actionable"],
         required: true,
     },
