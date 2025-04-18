@@ -48,7 +48,7 @@ export function CodeReviewDisplay({chainOfThought, groundTruth, prediction, summ
                     {/* Code Summary */}
                     <Card className={"rounded-none"}>
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-lg">What Code Change Does (Summary)</CardTitle>
+                            <CardTitle className="text-lg">Summary About Code (to give context)</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="rounded-md bg-slate-100 p-4 dark:bg-slate-800">
