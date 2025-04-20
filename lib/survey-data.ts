@@ -37,7 +37,7 @@ export const surveyResponseQuestions = [
         type: "likert",
         text: "Actionable",
         description: "Does the explanation in the reasoning trace suggest actionable changes (asks user to make a change)?",
-        options: ["Not Actionable", "Partially Actionable", "Clearly Actionable"],
+        options: ["Not Actionable", "Slightly Actionable", "Moderately Actionable", "Mostly Actionable", "Clearly Actionable"],
         required: true,
     },
     {
@@ -45,7 +45,7 @@ export const surveyResponseQuestions = [
         type: "likert",
         text: "Clarity",
         description: "How well the reasoning trace explains the AI's logic for its comment.",
-        options: ["Not Clear", "Somewhat Clear", "Very Clear"],
+        options: ["Not Clear", "Slightly Clear", "Moderately Clear", "Mostly Clear", "Very Clear"],
         required: true,
     },
     {
@@ -53,7 +53,7 @@ export const surveyResponseQuestions = [
         type: "likert",
         text: "Relevance",
         description: "How well the AI comment pertains to the specific code changed (diff) and the goal of that change.",
-        options: ["No Relevance", "Somewhat Relevant", "Very Relevant"],
+        options: ["No Relevance", "Slightly Relevant", "Moderately Relevant", "Mostly Relevant", "Very Relevant"],
         required: true,
     },
 ]
