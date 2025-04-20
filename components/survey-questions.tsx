@@ -34,31 +34,46 @@ export function SurveyQuestions({questions, responses, currentHash, onChange, er
     // Helper function to get detailed descriptions for each option
     const getOptionDescription = (questionId: string, option: string) => {
         if (questionId === "actionable") {
-            if (option === "Clearly Actionable") {
-                return 'Suggests a specific, understandable change. Example: "Rename variable `tmp` to `elapsed_time` for clarity."'
-            } else if (option === "Partially Actionable") {
-                return "Points to a specific issue but the suggestion is vague, incomplete, or requires significant interpretation by the author."
-            } else if (option === "Not Actionable") {
-                return "Vague, subjective, lacks specific direction, or doesn't relate to a concrete code change."
+            switch (option) {
+                case "Not Actionable":
+                    return "Vague, subjective, lacks specific direction, or doesn't relate to a concrete code change.";
+                case "Slightly Actionable":
+                    return "Mentions a potential issue but is too vague to be followed without guesswork.";
+                case "Moderately Actionable":
+                    return "Points to a specific issue but the suggestion is incomplete or requires interpretation by the author.";
+                case "Mostly Actionable":
+                    return 'Gives a clear suggestion, but may miss some context or minor detail. Example: "Consider renaming this variable for clarity."';
+                case "Clearly Actionable":
+                    return 'Suggests a specific, understandable change. Example: "Rename variable `tmp` to `elapsed_time` for clarity."';
             }
         } else if (questionId === "clarity") {
-            if (option === "Very Clear") {
-                return "Direct, logical explanation. Easy to follow the AI's reasoning for the comment."
-            } else if (option === "Somewhat Clear") {
-                return "Partially explains, but may be vague, incomplete, or require interpretation. The general idea is understandable."
-            } else if (option === "Not Clear") {
-                return "Confusing, irrelevant, illogical, nonsensical, or missing. Does not explain the AI comment."
+            switch (option) {
+                case "Not Clear":
+                    return "Confusing, irrelevant, illogical, or missing. Does not explain the comment at all.";
+                case "Slightly Clear":
+                    return "Some elements are understandable, but overall lacks clarity or is disorganized.";
+                case "Moderately Clear":
+                    return "Partially explains the reasoning, but may be vague, incomplete, or require interpretation.";
+                case "Mostly Clear":
+                    return "Generally easy to follow, with only minor ambiguities.";
+                case "Very Clear":
+                    return "Direct, logical explanation. Easy to follow the AI's reasoning for the comment.";
             }
         } else if (questionId === "relevance") {
-            if (option === "Very Relevant") {
-                return "Directly addresses code in the diff and relates closely to the change's purpose/impact. Improves the change."
-            } else if (option === "Somewhat Relevant") {
-                return "Addresses code in the diff but is tangential, minor, or only loosely connected to the change's main goal."
-            } else if (option === "No Relevance") {
-                return "Discusses code outside the diff, misunderstands the change's purpose, or is completely unrelated."
+            switch (option) {
+                case "No Relevance":
+                    return "Completely unrelated to the code change, or misunderstands the change’s purpose.";
+                case "Slightly Relevant":
+                    return "Touches on code aspects outside the diff or is only marginally related to the change.";
+                case "Moderately Relevant":
+                    return "Addresses code in the diff but is tangential or only loosely connected to the main change.";
+                case "Mostly Relevant":
+                    return "Pertinent to the change and addresses it directly, but may lack depth or precision.";
+                case "Very Relevant":
+                    return "Directly addresses code in the diff and relates closely to the change's purpose/impact. Improves the change.";
             }
         }
-        return ""
+        return "";
     }
 
     return (
